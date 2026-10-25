@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>AI Agent Workflow Architect</title>
+  <meta name="description" content="Build and troubleshoot reliable multi-step AI agents: visual workflow builder, validation, simulation and Python code generation for SCADA and automation engineers.">
+  <meta name="theme-color" content="#0b1220">
+  <link rel="manifest" href="public/manifest.webmanifest">
+  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Agent Architect">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="src/styles.css">
+  <script>try{var t=localStorage.getItem('aiwa:theme');if(t)document.documentElement.dataset.theme=t;else if(matchMedia('(prefers-color-scheme: light)').matches)document.documentElement.dataset.theme='light'}catch(e){}</script>
+</head>
+<body>
+  <div id="boot" class="boot">Loading AI Agent Workflow Architect…</div>
+  <noscript><p style="padding:24px">This app needs JavaScript.</p></noscript>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <img src="icons/favicon.svg" alt="" width="30" height="30">
+        <div class="brand-text"><b>AI Agent Workflow Architect</b><small>SCADA &amp; automation · Jebel Ali, Dubai</small></div>
+      </div>
+      <input id="wf-name" class="wf-name" aria-label="Workflow name" placeholder="Workflow name" autocomplete="off">
+      <div class="actions">
+        <span id="net" class="net" title="You are offline — the app still works">● offline</span>
+        <button id="btn-undo" class="icon" title="Undo (Ctrl+Z)" aria-label="Undo" disabled>↶</button>
+        <button id="btn-redo" class="icon" title="Redo (Ctrl+Y)" aria-label="Redo" disabled>↷</button>
+        <button id="btn-workflows" class="btn">Workflows</button>
+        <button id="btn-install" class="btn accent" hidden>Install</button>
+        <button id="btn-theme" class="icon" title="Toggle light / dark" aria-label="Toggle theme">☾</button>
+        <button id="btn-about" class="icon" title="About" aria-label="About">?</button>
+      </div>
+    </header>
+
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button data-tab="builder" class="active" role="tab" aria-selected="true">Builder</button>
+      <button data-tab="validate" role="tab" aria-selected="false">Validate <span id="badge" class="badge" hidden>0</span></button>
+      <button data-tab="simulate" role="tab" aria-selected="false">Simulate</button>
+      <button data-tab="code" role="tab" aria-selected="false">Code</button>
+    </nav>
+
+    <main>
+      <!-- BUILDER -->
+      <section id="view-builder" class="view active">
+        <aside class="palette" id="palette" aria-label="Step palette"></aside>
+        <div class="canvas-wrap">
+          <svg id="main-svg" class="canvas" role="application" aria-label="Workflow canvas"></svg>
+          <div class="canvas-tools">
+            <button data-zoom="in" aria-label="Zoom in">+</button>
+            <button data-zoom="out" aria-label="Zoom out">−</button>
+            <button data-zoom="fit" aria-label="Fit to screen">⤢</button>
+          </div>
+          <div class="canvas-legend"><span><i style="background:#94a3b8"></i>next</span><span><i style="background:#f87171"></i>on error</span><span><i style="background:#34d399"></i>true / approved</span><span><i style="background:#fbbf24"></i>false</span></div>
+        </div>
+        <aside class="inspector" id="inspector" aria-label="Step settings"></aside>
+      </section>
+
+      <!-- VALIDATE -->
+      <section id="view-validate" class="view"><div id="validate-root" class="page"></div></section>
+
+      <!-- SIMULATE -->
+      <section id="view-simulate" class="view">
+        <div class="sim-layout">
+          <aside class="sim-controls panel">
+            <h3>Sample input</h3>
+            <textarea id="sim-input" rows="9" spellcheck="false" aria-label="Sample input JSON"></textarea>
+            <div class="row2">
+              <label class="field"><span class="lbl">Speed</span><select id="sim-speed"><option value="700">Slow</option><option value="350" selected>Normal</option><option value="80">Fast</option><option value="0">Instant</option></select></label>
+              <label class="field"><span class="lbl">Human approvals</span><select id="sim-approval"><option value="ask" selected>Ask me</option><option value="approve">Auto-approve</option><option value="reject">Auto-reject</option><option value="timeout">Auto-timeout</option></select></label>
+            </div>
+            <h3>Inject faults</h3>
+            <div id="sim-faults" class="faults"></div>
+            <div class="btn-row"><button id="sim-run" class="btn accent">▶ Run simulation</button><button id="sim-stop" class="btn" disabled>Stop</button><button id="sim-reset" class="btn">Reset</button></div>
+          </aside>
+          <div class="sim-canvas canvas-wrap">
+            <svg id="sim-svg" class="canvas" aria-label="Simulation map"></svg>
+            <div class="canvas-tools"><button data-zoom-sim="in" aria-label="Zoom in">+</button><button data-zoom-sim="out" aria-label="Zoom out">−</button><button data-zoom-sim="fit" aria-label="Fit">⤢</button></div>
+          </div>
+          <aside class="sim-trace-col panel">
+            <div id="sim-result" class="result">Ready</div>
+            <h3>Run trace</h3>
+            <ul id="sim-trace" class="trace" aria-live="polite"></ul>
+            <details><summary>Final state</summary><pre id="sim-state" class="code small"></pre></details>
+          </aside>
+        </div>
+      </section>
+
+      <!-- CODE -->
+      <section id="view-code" class="view">
+        <div class="page code-page">
+          <div class="code-bar">
+            <div id="code-modes" class="seg"><button data-mode="python" class="active">Python</button><button data-mode="instructions">Instructions</button><button data-mode="json">JSON</button></div>
+            <div class="btn-row"><button id="code-copy" class="btn">Copy</button><button id="code-download" class="btn accent">Download</button></div>
+          </div>
+          <p id="code-hint" class="muted small"></p>
+          <div id="code-out"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- Workflows dialog -->
+  <dialog id="dlg-workflows">
+    <div class="dlg-head"><h2>Workflows</h2><button class="icon" data-close aria-label="Close">✕</button></div>
+    <h3>Start from a template</h3>
+    <div id="dlg-templates" class="tpl-grid"></div>
+    <h3>Saved on this device</h3>
+    <ul id="dlg-saved" class="saved"></ul>
+    <div class="btn-row">
+      <button id="btn-import" class="btn">Import JSON…</button>
+      <button id="btn-export" class="btn">Export current JSON</button>
+      <button id="btn-new-blank" class="btn">New blank</button>
+      <input id="file-import" type="file" accept=".json,application/json" hidden>
+    </div>
+  </dialog>
+
+  <!-- About dialog -->
+  <dialog id="dlg-about">
+    <div class="dlg-head"><h2>AI Agent Workflow Architect</h2><button class="icon" data-close aria-label="Close">✕</button></div>
+    <p>Build and troubleshoot reliable multi-step AI agents for SCADA and industrial automation work — pump stations, district cooling, water treatment and more.</p>
+    <ul class="about-list">
+      <li><b>Visual builder</b> — connected steps with models, tools, memory, conditions and human approval.</li>
+      <li><b>Validate</b> — missing steps, loops, unhandled failures and unguarded plant-changing actions.</li>
+      <li><b>Simulate</b> — dry-run with sample input, injected faults, retries, timeouts and approvals.</li>
+      <li><b>Generate</b> — Python agent code and plain-language workflow instructions.</li>
+    </ul>
+    <p class="muted small">Works offline once installed. Workflows are stored only on this device (export JSON to share). Generated code uses stubs for your OPC UA / historian / CMMS integrations and defaults to DRY RUN for write actions. Keep safety interlocks in the PLC — never rely on an AI agent for protection.</p>
+    <p class="muted small">Prepared for automation engineers working with AGAC-style SCADA / PLC / DCS projects — <a href="https://www.agac.ae" target="_blank" rel="noopener">agac.ae</a>. This is an independent tool, not an official product of Al Gurg Automation.</p>
+  </dialog>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

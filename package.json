@@ -1,0 +1,12 @@
+{
+  "name": "ai-agent-workflow-architect",
+  "version": "1.0.0",
+  "description": "PWA to build, validate, simulate and generate code for reliable multi-step AI agents (SCADA / automation engineering).",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "npx --yes serve . -l 8080",
+    "test": "node tests/engine.test.mjs"
+  },
+  "license": "MIT"
+}
