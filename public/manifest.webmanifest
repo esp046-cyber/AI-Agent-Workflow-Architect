@@ -1,0 +1,26 @@
+{
+  "name": "AI Agent Workflow Architect",
+  "short_name": "Agent Architect",
+  "description": "Build and troubleshoot reliable multi-step AI agents: visual workflows, validation, simulation and Python code generation for SCADA and automation engineers.",
+  "id": "../index.html",
+  "start_url": "../index.html?source=pwa",
+  "scope": "../",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["productivity", "developer tools", "utilities"],
+  "icons": [
+    { "src": "../icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "../icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "../icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "../icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "../icons/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "New workflow", "short_name": "New", "url": "../index.html?source=shortcut", "icons": [{ "src": "../icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}
